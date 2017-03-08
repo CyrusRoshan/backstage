@@ -1,7 +1,8 @@
 .Header {
   width: 100%;
   padding: 10px;
-  padding-bottom: 10px;
+  padding-left: 0px;
+  padding-right: 0px;
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
@@ -9,6 +10,11 @@
   font-weight: 200;
   font-family: sans-serif;
   border-bottom: 1px solid gray;
+}
+
+.Header > * {
+  margin-right: 10px;
+  margin-left: 10px;
 }
 
 .Title {
@@ -21,6 +27,17 @@
   font-size: 16px;
 }
 
-.Header > div {
-  margin-right: 20px;
+.Status {
+  width: 20px;
+  height: 20px;
+  margin-right: 0px;
+  border-radius: 100%;
+}
+
+.Status svg {
+  boder: 2px solid black;
+}
+
+.Ping {
+
 }
