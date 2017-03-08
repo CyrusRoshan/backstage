@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
 import './App.css';
+
 import { random } from '../utils'
 import { STAGELOADING_OPTIONS } from '../constants'
+
 import Header from '../Header/Header';
+import GraphHolder from '../GraphHolder/GraphHolder';
 
 class App extends Component {
   constructor(props) {
@@ -15,19 +18,23 @@ class App extends Component {
   }
 
   handleChange(e) {
-    this.setState({value: e.target.value});
+    this.setState({ value: e.target.value });
   }
 
   render() {
     return (
       <div className="App">
         <Header
-          name={this.state.name}
-          targetURL={this.state.targetURL}
-          connected={this.state.connected}
-          onChange={this.handleChange}
+          name={ this.state.name }
+          targetURL={ this.state.targetURL }
+          connected={ this.state.connected }
+          onChange={ this.handleChange }
         />
         <GraphHolder
+          targetURL={ this.state.targetURL }
+          name={ this.state.name }
+          connected={ this.state.connected }
+          onChange={ this.handleChange }
         />
       </div>
     );
