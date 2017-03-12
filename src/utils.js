@@ -2,6 +2,20 @@ export function random(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
+export function randomNoRepeat() {
+  var lastItem;
+  return function noRepeatFunc(arr) {
+    var item = arr[Math.floor(Math.random() * arr.length)];
+
+    if (item === lastItem) {
+      return noRepeatFunc(arr);
+    }
+
+    lastItem = item;
+    return item;
+  }
+}
+
 export function request(method, url, onSuccess, onError, onPanic) {
   // edited from http://stackoverflow.com/a/13975363/4455222
   var started = new Date().getTime();
