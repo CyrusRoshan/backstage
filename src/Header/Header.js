@@ -21,7 +21,8 @@ class Header extends Component {
 
     return (
       <div className="Header">
-        <div className="Title">
+        <div 
+          className="Title">
           backstage
         </div>
 
@@ -39,8 +40,8 @@ class Header extends Component {
 
         <div
           className="Ping">
-          Ping: {this.props.ping}ms<
-        /div>
+          Ping: {this.props.ping}ms
+        </div>
 
         <div
           className="Name">

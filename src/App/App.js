@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import './App.css';
 
 import { request } from '../utils'
-import { DISCONNECTED_STATUS } from '../constants'
+import { DISCONNECTED_STATUS, DEFAULT_URL, DEFAULT_NAME, DEFAULT_PING_RATE } from '../constants'
 
 import Header from '../Header/Header';
 import GraphHolder from '../GraphHolder/GraphHolder';
@@ -11,19 +11,43 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      name: 'Loading...',
-      targetURL: 'http://localhost:3000',
+      name: DEFAULT_NAME,
+      targetURL: DEFAULT_URL,
       connected: false,
       ping: -1,
       statusColor: DISCONNECTED_STATUS,
+      targetInfo: {},
     }
 
-    var onSuccess = (ms) => { this.updatePingAndStatus(ms) };
-    var onError = () => { this.updatePingAndStatus(-1) };
+    this.pingTarget(DEFAULT_PING_RATE);
+  }
+
+  pingTarget = (pingRate) => {
+    var onError = () => {this.updatePingAndStatus(-1)};
+    var onSuccess = (ms) => {  
+      if (!this.state.connected) {
+        this.getTargetInfo();
+      }
+      this.updatePingAndStatus(ms);
+    }
 
     setInterval(() => {
-      request('GET', this.state.targetURL, onSuccess, onError, onError)
-    }, 1000);
+      request('GET', this.state.targetURL + '/ping', onSuccess, onError, onError)
+    }, pingRate);
+  }
+
+  getTargetInfo = () => {
+    var onError = () => {
+      this.setState({connected: false});
+    };
+    var onSuccess = (ms, resp) => {
+      var targetInfo = JSON.parse(resp.responseText);
+      this.setState({
+        name: targetInfo.Name,
+        targetInfo: targetInfo,
+      })
+    }
+    request('GET', this.state.targetURL + '/info', onSuccess, onError, onError)
   }
 
   handleTargetURLChange = (targetURL) => {
@@ -31,10 +55,10 @@ class App extends Component {
   }
 
   updatePingAndStatus = (ping) => {
-    this.setState({ ping: ping });
+    this.setState({ping: ping});
 
     if (ping === -1) {
-      this.setState({ connected: false, statusColor: DISCONNECTED_STATUS });
+      this.setState({connected: false, statusColor: DISCONNECTED_STATUS});
       return;
     }
     if (ping > 500) {
@@ -43,7 +67,7 @@ class App extends Component {
 
     var red = Math.round(200 * ping/500 + 20);
     var green = Math.round(200 * (1 - ping/500) + 20);
-    this.setState({ connected: true, statusColor: `rgb(${red}, ${green}, 50)` });
+    this.setState({connected: true, statusColor: `rgb(${red}, ${green}, 50)`});
   }
 
   render() {
@@ -60,9 +84,8 @@ class App extends Component {
         />
         <GraphHolder
           targetURL={this.state.targetURL}
-          name={this.state.name}
           connected={this.state.connected}
-          onChange={this.handleChange}
+          targetInfo={this.state.targetInfo}
         />
       </div>
     );
