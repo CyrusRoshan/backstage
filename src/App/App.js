@@ -42,6 +42,16 @@ class App extends Component {
     };
     var onSuccess = (ms, resp) => {
       var targetInfo = JSON.parse(resp.responseText);
+      targetInfo.ChartInfo = targetInfo.ChartInfo.map(chart => {
+        if (chart.Options === '') {
+          chart.Options = undefined;
+        } else {
+          chart.Options = JSON.parse(chart.Options);
+        }
+        return chart;
+      });
+      console.log(targetInfo.ChartInfo)
+
       this.setState({
         name: targetInfo.Name,
         targetInfo: targetInfo,

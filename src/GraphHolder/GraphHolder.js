@@ -8,6 +8,7 @@ class GraphHolder extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      resetCharts: true,
       charts: [],
     }
   }
@@ -21,10 +22,10 @@ class GraphHolder extends Component {
   }
 
   chartsToElems = (charts) => {
-    return charts.map((chart) => {
+    return charts.map((chart, index) => {
       return React.createElement(
-        chartjs[chart.type],
-        {data: chart.data, options: chart.options},
+        chartjs[chart.Type],
+        {data: chart.ReadData, options: chart.Options, key: index},
         null,
       )
     })
@@ -32,14 +33,18 @@ class GraphHolder extends Component {
 
   handleChartUpdate = (data) => {
     var charts = this.state.charts;
+    if (this.state.resetCharts || charts.length === 0) {
+      this.setState({resetCharts: false});
+      charts = this.props.targetInfo.ChartInfo;
+    }
 
     for (var i = 0; i < data.length; i++) {
-      if (!charts[i]) {
-        charts[i] = data[i];
-        continue;
+      if (!charts[i].ReadData) {
+        charts[i].ReadData = [];
       }
 
       charts[i].Name = data[i].Name;
+      charts[i].Type = data[i].Type;
       charts[i].ReadData = charts[i].ReadData.concat(data[i].ReadData);
       charts[i].ReadData = charts[i].ReadData.slice(Math.max(charts[i].ReadData.length - 30, 0))
     }
@@ -69,6 +74,7 @@ class GraphHolder extends Component {
           return;
         }
       } else if (wasConnected && !this.props.connected) {
+        this.setState({resetCharts: true});
         clearInterval(pullData);
       }
 
@@ -79,11 +85,10 @@ class GraphHolder extends Component {
 
   render() {
     this.triggerDataCollection();
-    // { this.chartsToElems(this.state.charts) }
     return (
       <div
         className="GraphHolder">
-        {this.state.targetURL}
+        {this.chartsToElems(this.state.charts)}
       </div>
     );
   }
